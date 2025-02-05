@@ -60,9 +60,9 @@ print(results[['reference', 'generated', 'Is the LLM generated response accurate
 
 ### `model_name`
 Supported models:
-- **OpenAI**: `gpt-4-turbo`, `gpt-4`, `gpt-3.5-turbo`
-- **Anthropic**: `claude-3-opus`, `claude-3-sonnet`, `claude-2`
-- **DeepSeek**: `deepseek-chat`, `deepseek-coder`
+- **OpenAI**: `gpt-3.5-turbo`, `gpt-4`, `gpt-4-turbo`, `gpt-4o-mini`, `gpt-4o`, `o1-mini`, `o1`
+- **Anthropic**: `claude-2`, `claude-3-haiku-20240307`, `claude-3-sonnet-20240229`, `claude-3-opus-latest`, `claude-3-5-haiku-latest`, `claude-3-5-sonnet-latest`
+- **DeepSeek**: `deepseek-chat`, `deepseek-reasoner`
 
 ### `api_key`
 - Obtain from your LLM provider's console
@@ -84,7 +84,7 @@ custom_criteria = [
 
 results = evaluate_responses(
     dataframe=df,
-    model_name='claude-3-sonnet',
+    model_name='claude-3-5-sonnet-latest',
     api_key='your_key',
     criteria=custom_criteria
 )
