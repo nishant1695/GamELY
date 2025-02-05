@@ -5,7 +5,7 @@ A Python package for evaluating LLM-generated responses against human references
 ## Installation
 
 ```bash
-pip install gamely
+pip install GameLY
 ```
 
 ## Quick Start
@@ -40,7 +40,7 @@ print(results[['reference', 'generated', 'Is the LLM generated response accurate
 
 - **Automatic Provider Detection**: Just specify the model name
 - **Batch Processing**: Evaluate hundreds of responses efficiently
-- **Comprehensive Criteria**: 15+ default evaluation dimensions
+- **Custom Criteria**: Use default or define your own evaluation metrics
 - **Multiple LLM Support**: OpenAI, Anthropic, and DeepSeek models
 
 ## Required Parameters
