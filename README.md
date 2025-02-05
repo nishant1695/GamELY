@@ -12,7 +12,7 @@ pip install GameLY
 
 ```python
 import pandas as pd
-from gamely import evaluate_responses
+from GameLY import evaluate_responses
 
 # Prepare your data
 df = pd.DataFrame({
@@ -92,7 +92,7 @@ results = evaluate_responses(
 
 ### Error Handling
 ```python
-from gamely import AuthenticationError, APIRequestError
+from GameLY import AuthenticationError, APIRequestError
 
 try:
     results = evaluate_responses(df, 'gpt-4', 'invalid-key')
