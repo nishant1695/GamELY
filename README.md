@@ -1,0 +1,138 @@
+# GameLY - LLM Response Evaluation Framework
+
+A Python package for evaluating LLM-generated responses against human references using state-of-the-art LLMs as judges.
+
+## Installation
+
+```bash
+pip install gamely
+```
+
+## Quick Start
+
+```python
+import pandas as pd
+from gamely import evaluate_responses
+
+# Prepare your data
+df = pd.DataFrame({
+    'reference': [
+        'The capital of France is Paris',
+        'Water boils at 100°C at sea level'
+    ],
+    'generated': [
+        'Paris is the capital city of France',
+        'Water boils at 90°C in high altitudes'
+    ]
+})
+
+# Run evaluation
+results = evaluate_responses(
+    dataframe=df,
+    model_name='gpt-4-turbo',  # or 'claude-3-opus', 'deepseek-chat'
+    api_key='your_api_key_here'
+)
+
+print(results[['reference', 'generated', 'Is the LLM generated response accurate?']])
+```
+
+## Key Features
+
+- **Automatic Provider Detection**: Just specify the model name
+- **Batch Processing**: Evaluate hundreds of responses efficiently
+- **Comprehensive Criteria**: 15+ default evaluation dimensions
+- **Multiple LLM Support**: OpenAI, Anthropic, and DeepSeek models
+
+## Required Parameters
+
+### `dataframe`
+- **Type**: `pandas.DataFrame`
+- **Columns**:
+  - `reference`: Human-written reference answers (str)
+  - `generated`: LLM-generated responses to evaluate (str)
+- **Example**:
+  ```python
+  pd.DataFrame({
+      'reference': ['Reference answer 1', 'Reference answer 2'],
+      'generated': ['Generated response 1', 'Generated response 2']
+  })
+  ```
+
+### `model_name`
+Supported models:
+- **OpenAI**: `gpt-4-turbo`, `gpt-4`, `gpt-3.5-turbo`
+- **Anthropic**: `claude-3-opus`, `claude-3-sonnet`, `claude-2`
+- **DeepSeek**: `deepseek-chat`, `deepseek-coder`
+
+### `api_key`
+- Obtain from your LLM provider's console
+- **Recommended**: Store in environment variables
+  ```python
+  import os
+  os.environ['OPENAI_API_KEY'] = 'your-key-here'  # For OpenAI/DeepSeek
+  os.environ['ANTHROPIC_API_KEY'] = 'your-key-here'
+  ```
+
+## Advanced Usage
+
+### Custom Evaluation Criteria
+```python
+custom_criteria = [
+    'Does the response use formal language?',
+    'Is the response under 100 characters?'
+]
+
+results = evaluate_responses(
+    dataframe=df,
+    model_name='claude-3-sonnet',
+    api_key='your_key',
+    criteria=custom_criteria
+)
+```
+
+### Error Handling
+```python
+from gamely import AuthenticationError, APIRequestError
+
+try:
+    results = evaluate_responses(df, 'gpt-4', 'invalid-key')
+except AuthenticationError as e:
+    print(f"Invalid API key for {e.provider}: Please check your credentials")
+except APIRequestError as e:
+    print(f"API Error: {str(e)}")
+```
+
+## FAQ
+
+### Q: How are scores calculated?
+A: Each criterion is scored 1-5 by the LLM judge:
+- 1 = Strongly disagree
+- 2 = Disagree
+- 3 = Neutral
+- 4 = Agree
+- 5 = Strongly agree
+- NaN = Irrelevant criterion
+
+### Q: What's the cost?
+A: Evaluation uses your LLM provider's API - costs depend on model and dataset size
+
+### Q: Can I add custom models?
+A: Currently supports OpenAI, Anthropic, and DeepSeek. Contact us for new provider requests
+
+### Q: How long does evaluation take?
+A: Depends on model speed and dataset size. 100 rows take ~2-5 minutes with GPT-4
+
+## Troubleshooting
+
+### Common Errors
+- `AuthenticationError`: Check your API key and provider billing
+- `ValueError`: Verify model name spelling and support status
+- `APIRequestError`: Check network connection and API rate limits
+
+### Best Practices
+1. Start with small batches (5-10 rows) for testing
+2. Use lowest-cost adequate model (e.g., `gpt-3.5-turbo` for simple evaluations)
+3. Cache results for repeated evaluations
+
+## License
+MIT License - See [LICENSE](LICENSE) for details
