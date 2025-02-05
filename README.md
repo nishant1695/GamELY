@@ -5,7 +5,11 @@ A Python package for evaluating LLM-generated responses against human references
 ## Installation
 
 ```bash
-pip install GameLY
+# From PyPI
+pip install gamely
+
+# For local development
+pip install -e .
 ```
 
 ## Quick Start
