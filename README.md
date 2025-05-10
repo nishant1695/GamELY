@@ -137,6 +137,3 @@ A: Depends on model speed and dataset size. 100 rows take ~2-5 minutes with GPT-
 1. Start with small batches (5-10 rows) for testing
 2. Use lowest-cost adequate model (e.g., `gpt-3.5-turbo` for simple evaluations)
 3. Cache results for repeated evaluations
-
-## License
-MIT License - See [LICENSE](LICENSE) for details
