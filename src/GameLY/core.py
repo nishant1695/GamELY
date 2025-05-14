@@ -130,7 +130,6 @@ class GameLY:
         eval_criteria = criteria or self.DEFAULT_CRITERIA
         if criteria is None:
             print("No criteria provided. Using default criteria:", self.DEFAULT_CRITERIA)
-            print("System prompt:", self._get_system_prompt())
         
         # Create evaluation tasks
         evaluation_tasks = []
