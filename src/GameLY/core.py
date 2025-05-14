@@ -182,7 +182,7 @@ class GameLY:
         """Get the system prompt for evaluations"""
         return (
             "You are an expert evaluator comparing AI-generated responses to human-written references. "
-            "Respond strictly with the requested numerical rating or 'irrelevant' when irrelevant."
+            "Respond strictly with the requested numerical rating or 'NaN' when irrelevant."
         )
 
     def _build_prompt(self, reference: str, generated: str, criterion: str) -> str:
@@ -203,9 +203,9 @@ Respond with ONLY one of these numerical options:
 3 = Neutral
 4 = Agree
 5 = Strongly agree
-irrelevant = Criterion is irrelevant
+NaN = Criterion is irrelevant
 
-ONLY respond with the number/irrelevant, no other text."""
+ONLY respond with the number/NaN, no other text."""
 
     def _call_provider(self, prompt: str, system_prompt: str) -> str:
         """Make API call to the configured provider."""
@@ -267,8 +267,8 @@ ONLY respond with the number/irrelevant, no other text."""
                 return float(score)
         
         # Check for NaN responses
-        if 'irrelevant' in response:
-            return 'irrelevant'
+        if 'NaN' in response:
+            return np.nan
         
         # Return NaN for unparseable responses
         return float('nan')
