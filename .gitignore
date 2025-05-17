@@ -1,3 +1,5 @@
 # .gitignore
 src/GameLY.egg-info/*
 src/GameLY/__pycache__
+./analysis/human_scores/*
+./analysis/LLM_scores/*
