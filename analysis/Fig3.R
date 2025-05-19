@@ -129,7 +129,7 @@ correlations <- all_results %>%
 
 # ---- Plot IRR Correlation ----
 p <- ggplot(correlations, aes(x = Random_Selection_Percent, y = Correlation)) +
-  geom_line(color = "#FFA500", size = 1.2) +
+  geom_line(color = "#FFA500", size = 2) +
   geom_point(color = "#FFA500", size = 2) +
   geom_ribbon(aes(ymin = CI_Lower, ymax = CI_Upper), fill = "darkgreen", alpha = 0.2) +
   facet_wrap(~ Dataset, nrow = 1) +
@@ -139,9 +139,9 @@ p <- ggplot(correlations, aes(x = Random_Selection_Percent, y = Correlation)) +
   ) +
   theme_minimal() +
   theme(
-    strip.text = element_text(size = 13, face = "bold", color = "#444444"),
+    strip.text = element_text(size = 20, face = "bold", color = "#444444"),
     axis.title = element_text(size = 12, face = "bold"),
-    axis.text = element_text(size = 11),
+    axis.text = element_text(size = 20),
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
 

@@ -147,7 +147,7 @@ generate_heatmap_plot <- function(metric_name, output_filename) {
     ) +
     theme(
       axis.text.x = element_text(angle = 45, hjust = 1),
-      strip.text = element_text(size = 16)
+      strip.text = element_text(size = 26)
     ) +
     scale_x_discrete(limits = ordered_questions) +
     geom_text(aes(label = round(Value, 2)), color = "black", size = 4)

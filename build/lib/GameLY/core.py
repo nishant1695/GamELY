@@ -1,14 +1,13 @@
 # src/GameLY/core.py
 import re
 import requests
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 import openai
 from anthropic import Anthropic
 import pandas as pd
-from .provider_mapper import get_provider
-import concurrent.futures
-from functools import partial
 import numpy as np
+from .provider_mapper import get_provider
+
 
 class AuthenticationError(Exception):
     """Raised when API key is invalid"""
@@ -47,12 +46,11 @@ class GameLY:
     ]
 
 
-    def __init__(self, model_name: str, api_key: str, max_workers: int = None):
+    def __init__(self, model_name: str, api_key: str):
         self.model_name = model_name
         self.api_key = api_key
         self.provider = get_provider(model_name)
-        self.max_workers = max_workers  # Number of workers for parallel processing
-        self.valid_api_key = self.validate_api_key(self.provider, self.api_key)
+        self.valid_api_key = self.validate_api_key(self.provider,self.api_key)
         if not self.valid_api_key:
             raise AuthenticationError(self.provider)
         self._setup_client()
@@ -87,20 +85,21 @@ class GameLY:
             elif provider == "deepseek":
                 url = "https://api.deepseek.com/v1/models"  # Deepseek endpoint
                 headers = {
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json"
-                }
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
 
                 response = requests.get(url, headers=headers, timeout=10)
-                # Successful response (2xx status code)
+            # Successful response (2xx status code)
                 if response.status_code // 100 == 2:
                     return True
-                # Handle authentication errors (401, 403) or other issues
+            # Handle authentication errors (401, 403) or other issues
                 else:
                     return False
         except AuthenticationError:
             return False
         except Exception as e:
+            #st.error(f"Validation error: {str(e)}")
             return False
         return False
 
@@ -110,7 +109,7 @@ class GameLY:
         criteria: Optional[List[str]] = None
     ) -> pd.DataFrame:
         """
-        Evaluate a batch of responses in parallel.
+        Evaluate a batch of responses.
         
         Args:
             dataframe: DataFrame with columns ['reference', 'generated']
@@ -119,58 +118,36 @@ class GameLY:
         Returns:
             DataFrame with evaluation results added
         """
+
         # Validate input format
         if len(dataframe.columns) != 2:
             raise EvaluationError("DataFrame must have exactly 2 columns: reference answer and the generated answer")
  
-        dataframe.columns = ['reference', 'generated']
+        dataframe.columns = ['reference','generated']
         results = dataframe.copy()
-        
-        # Use default criteria if none provided
-        eval_criteria = criteria or self.DEFAULT_CRITERIA
+
         if criteria is None:
             print("No criteria provided. Using default criteria:", self.DEFAULT_CRITERIA)
-        
-        # Create evaluation tasks
-        evaluation_tasks = []
-        system_prompt = self._get_system_prompt()
-        
-        for idx, row in dataframe.iterrows():
-            ref = row['reference']
-            gen = row['generated']
-            for criterion in eval_criteria:
-                # Each task is (row_index, criterion, reference, generated)
-                evaluation_tasks.append((idx, criterion, ref, gen))
-        
-        # Execute tasks in parallel
-        with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
-            # Create a partial function with system_prompt already defined
-            eval_func = partial(self._parallel_evaluate_task, system_prompt=system_prompt)
-            # Map the function to all tasks
-            evaluation_results = list(executor.map(eval_func, evaluation_tasks))
-        
-        # Initialize columns with the right dtype (object) to handle mixed types
-        for criterion in eval_criteria:
-            results[criterion] = pd.Series(dtype='object')
-
-        # Process results and update DataFrame
-        for idx, criterion, score in evaluation_results:
-            results.at[idx, criterion] = score
+        # Add evaluation columns
+        for criterion in (criteria or self.DEFAULT_CRITERIA):
+            results[criterion] = dataframe.apply(
+                lambda row: self._evaluate_single(
+                    row['reference'],
+                    row['generated'],
+                    criterion=criterion,
+                    system_prompt=self._get_system_prompt()
+                ),
+                axis=1
+            )
         
         return results
-    
-    def _parallel_evaluate_task(self, task: Tuple, system_prompt: str) -> Tuple:
-        """Process a single evaluation task for parallel execution"""
-        idx, criterion, reference, generated = task
-        score = self._evaluate_single(reference, generated, criterion, system_prompt)
-        return (idx, criterion, score)
     
     def _evaluate_single(
         self,
         reference: str,
         generated: str,
         criterion: str,
-        system_prompt: str
+        system_prompt: str  # Add as parameter
     ) -> float:
         """Evaluate a single response pair"""
         prompt = self._build_prompt(reference, generated, criterion)
@@ -181,8 +158,11 @@ class GameLY:
         """Get the system prompt for evaluations"""
         return (
             "You are an expert evaluator comparing AI-generated responses to human-written references. "
-            "Respond strictly with the requested numerical rating or 'NaN' when irrelevant."
+            "Respond strictly with the requested numerical rating or NaN when irrelevant."
         )
+
+    # Keep other methods from previous implementation (_build_prompt, _call_provider, etc.)
+    # ... (previous code here) ...
 
     def _build_prompt(self, reference: str, generated: str, criterion: str) -> str:
         """Construct the evaluation prompt for a single criterion."""
@@ -210,7 +190,8 @@ ONLY respond with the number/NaN, no other text."""
         """Make API call to the configured provider."""
         try:
             if self.provider == 'openai':
-                response = self.client.chat.completions.create(
+                client = openai.OpenAI(api_key=self.api_key)
+                response = client.chat.completions.create(
                     model=self.model_name,
                     messages=[
                         {"role": "system", "content": system_prompt},
@@ -221,6 +202,7 @@ ONLY respond with the number/NaN, no other text."""
                 return response.choices[0].message.content.strip()
             
             elif self.provider == 'anthropic':
+                self.client = Anthropic(api_key=self.api_key)
                 response = self.client.messages.create(
                     model=self.model_name,
                     max_tokens=10,
@@ -231,7 +213,9 @@ ONLY respond with the number/NaN, no other text."""
                 return response.content[0].text.strip()
             
             elif self.provider == 'deepseek':
-                response = self.client.chat.completions.create(
+                # Implement DeepSeek API call here
+                client = openai.OpenAI(api_key=self.api_key, base_url="https://api.deepseek.com")
+                response = client.chat.completions.create(
                     model=self.model_name,
                     messages=[
                         {"role": "system", "content": system_prompt},
@@ -240,6 +224,8 @@ ONLY respond with the number/NaN, no other text."""
                     stream=False
                 )
                 return response.choices[0].message.content
+                
+                #raise NotImplementedError("DeepSeek API not implemented")
             
         except Exception as e:
             return f"API Error: {str(e)}"
@@ -266,8 +252,8 @@ ONLY respond with the number/NaN, no other text."""
                 return float(score)
         
         # Check for NaN responses
-        if 'NaN' in response:
+        if 'nan' in response:
             return np.nan
         
         # Return NaN for unparseable responses
-        return float('nan')
+        return np.nan

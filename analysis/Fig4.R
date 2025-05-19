@@ -1,4 +1,3 @@
-# Required libraries
 library(dbscan)
 library(ggplot2)
 library(reshape2)
@@ -34,7 +33,7 @@ question_map <- list(
 question_map <- lapply(question_map, function(x) gsub(" ", ".", x))
 reverse_question_map <- setNames(names(question_map), unname(question_map))
 
-# Function to generate heatmap
+# Function to generate heatmap without cell text and with increased font sizes
 generate_heatmap <- function(df, dbscan_result) {
   df[df == -1] <- 0
   cluster_scores <- aggregate(df, by = list(cluster = dbscan_result$cluster), FUN = mean)
@@ -47,19 +46,28 @@ generate_heatmap <- function(df, dbscan_result) {
   
   ggplot(melted, aes(x = Metric, y = Cluster, fill = Score)) +
     geom_tile() +
-    geom_text(aes(label = round(Score, 2)), color = "white", size = 2) +
+    # Removed geom_text to eliminate text in heatmap cells
     scale_fill_viridis(option = "D", direction = 1) +
     labs(x = "Metric", y = "Cluster") +
     theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    theme(
+      axis.text.x = element_text(angle = 90, hjust = 1, size = 14),
+      axis.text.y = element_text(size = 14),
+      axis.title.x = element_text(size = 16, face = "bold"),
+      axis.title.y = element_text(size = 16, face = "bold"),
+      legend.title = element_text(size = 14),
+      legend.text = element_text(size = 12)
+    )
 }
 
 # Function to save detected anomalies
 save_anomalies <- function(dbscan_result, file_name) {
   anomaly_indices <- which(dbscan_result$cluster == 0)
-  write.csv(data.frame(anomalies = anomaly_indices),
-            file = file.path(save_dir, paste0("Anomalies_", basename(file_name))),
-            row.names = FALSE)
+  write.csv(
+    data.frame(anomalies = anomaly_indices),
+    file = file.path(save_dir, paste0("Anomalies_", basename(file_name))),
+    row.names = FALSE
+  )
 }
 
 # Process all files
@@ -85,4 +93,5 @@ for (file in input_files) {
 # Combine heatmaps and export
 combined_plot <- grid.arrange(grobs = heatmaps, ncol = 3, nrow = 1)
 ggsave(filename = file.path("Fig4.pdf"),
-       plot = combined_plot, width = 15, height = 5, dpi = 700)
+       plot = combined_plot,
+       width = 15, height = 5, dpi = 700)
