@@ -1,4 +1,4 @@
-# src/GameLY/provider_mapper.py
+# src/GamELY/provider_mapper.py
 MODEL_PROVIDER_MAP = {
     # OpenAI models
     'gpt-3.5-turbo': 'openai',

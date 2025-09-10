@@ -1,5 +1,5 @@
-# src/GameLY/__init__.py
-from .core import GameLY
+# src/GamELY/__init__.py
+from .core import GamELY
 from .provider_mapper import MODEL_PROVIDER_MAP
 import pandas as pd
 
@@ -21,7 +21,7 @@ def evaluate_responses(
     Returns:
         DataFrame with evaluation results
     """
-    evaluator = GameLY(model_name, api_key)
+    evaluator = GamELY(model_name, api_key)
     return evaluator.evaluate_batch(dataframe, criteria)
 
 

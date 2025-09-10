@@ -1,20 +1,18 @@
-# GameLY - LLM Response Evaluation Framework
+# GamELY - LLM Response Evaluation Framework
 
 A Python package for evaluating LLM-generated responses against human references using state-of-the-art LLMs as judges.
 
 ## Installation
 
 ```bash
-# Make sure you are in the directory containing the GameLY folder
-# (i.e., if GameLY is at /path/to/GameLY, you should be in /path/to/)
-pip install ./GameLY
+pip install GamELY
 ```
 
 ## Quick Start
 
 ```python
 import pandas as pd
-from GameLY import evaluate_responses
+from GamELY import evaluate_responses
 
 # Prepare your data
 df = pd.DataFrame({
@@ -92,7 +90,7 @@ results = evaluate_responses(
 )
 ```
 ### Default Evaluation Criteria
-If you do not provide a custom list of criteria when calling evaluate_responses, GameLY will use the following default set of 17 criteria that aim to provide a holistic evaluation of the LLM's output:
+If you do not provide a custom list of criteria when calling evaluate_responses, GamELY will use the following default set of 17 criteria that aim to provide a holistic evaluation of the LLM's output:
 ```python
 DEFAULT_CRITERIA = [
         'Is the LLM generated response accurate?',
@@ -117,7 +115,7 @@ DEFAULT_CRITERIA = [
 
 ### Error Handling
 ```python
-from GameLY import AuthenticationError, APIRequestError
+from GamELY import AuthenticationError, APIRequestError
 
 try:
     results = evaluate_responses(df, 'gpt-4', 'invalid-key')

@@ -1,0 +1,19 @@
+[project]
+name = "GamELY"
+version = "0.1.0"
+authors = [
+  { name="Nishant Singh", email="nishant1695@gmail.com" },
+  {name="Ragahv Awasthi", email="raghavaw@iiitd.ac.in"},
+]
+description = "A Python package for evaluating LLM-generated responses against human references using state-of-the-art LLMs as judges."
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/nishant1695/GamELY"

@@ -1,4 +1,4 @@
-# src/GameLY/core.py
+# src/GamELY/core.py
 import re
 import requests
 from typing import Dict, List, Optional
@@ -23,7 +23,7 @@ class EvaluationError(Exception):
     """Custom exception for evaluation errors"""
     pass
 
-class GameLY:
+class GamELY:
 
     DEFAULT_CRITERIA = [
         'Is the LLM generated response accurate?',
