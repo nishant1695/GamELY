@@ -1,6 +1,6 @@
 # GamELY - LLM Response Evaluation Framework
 
-A Python package for evaluating LLM-generated responses against human references using state-of-the-art LLMs as judges.
+GamELY (Generative AI method for Evaluation of LLM Yield) is an open-source framework that operationalizes LLM-as-a-judge for clinical question answering. It provides in-built, clinically grounded metrics—Relevance, Coverage, Coherence, Harm, and Comparison—and an end-to-end pipeline to run and log large-scale evaluations of model outputs against guideline-based references.
 
 ## Installation
 
